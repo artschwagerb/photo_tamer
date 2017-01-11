@@ -1,4 +1,5 @@
 import os
+from PIL import Image
 import zipfile
 
 path = os.path.dirname(os.path.abspath(__file__))
@@ -34,23 +35,41 @@ idlink_file = os.path.join(path, 'idlink.txt')
 f = open(idlink_file,'wb')
 
 for filename in os.listdir(path):
+	filepath = os.path.join(path, filename)
+
 	if filename.startswith('0'):
 		# remove leading zeros
 		new_filename = filename.lstrip("0")
 		print "Removing Leading Zeros: %s to %s" % (filename,new_filename)
-		os.rename(os.path.join(path, filename), os.path.join(path, new_filename))
+		os.rename(filepath, os.path.join(path, new_filename))
 		filename = new_filename
 
 	if filename.endswith('.JPG'):
 		# rename .JPG to .jpg
 		new_filename = filename.replace('.JPG', '.jpg')
 		print "Renaming .JPG to .jpg: %s to %s" % (filename,new_filename)
-		os.rename(os.path.join(path, filename), os.path.join(path, new_filename))
+		os.rename(filepath, os.path.join(path, new_filename))
 		filename = new_filename
 
 	if filename.endswith('.jpg'):
 		# write to idlink.txt file
 		f.write('"' + filename.replace('.jpg', '') + '","' + ''.join(filename) + '"\n')
+
+		MAX_SIZE = 800
+		image = Image.open(filepath)
+		original_size = max(image.size[0], image.size[1])
+
+		if original_size >= MAX_SIZE:
+			#resized_file = open(filepath.split('.')[0] + '_resized.jpg', "w")
+			if (image.size[0] > image.size[1]):
+				resized_width = 600
+				resized_height = int(round((MAX_SIZE/float(image.size[0]))*image.size[1])) 
+			else:
+				resized_height = 800
+				resized_width = int(round((MAX_SIZE/float(image.size[1]))*image.size[0]))
+
+			image = image.resize((resized_width, resized_height), Image.ANTIALIAS)
+			image.save(filename, 'JPEG')
 
 print "======================================"
 f.close()
