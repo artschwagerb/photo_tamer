@@ -29,6 +29,7 @@ print """
 print "--------------------------------------"
 print "- Removes Leading Zeros, ie '000123.jpg' becomes '123.jpg'"
 print "- Renames .JPG to .jpg"
+print "- Resizes photos larger than 400px to 320 x 400px"
 print "--------------------------------------"
 
 idlink_file = os.path.join(path, 'idlink.txt')
@@ -55,17 +56,17 @@ for filename in os.listdir(path):
 		# write to idlink.txt file
 		f.write('"' + filename.replace('.jpg', '') + '","' + ''.join(filename) + '"\n')
 
-		MAX_SIZE = 800
+		MAX_SIZE = 400
 		image = Image.open(filepath)
 		original_size = max(image.size[0], image.size[1])
 
 		if original_size >= MAX_SIZE:
 			#resized_file = open(filepath.split('.')[0] + '_resized.jpg', "w")
 			if (image.size[0] > image.size[1]):
-				resized_width = 600
+				resized_width = 320
 				resized_height = int(round((MAX_SIZE/float(image.size[0]))*image.size[1])) 
 			else:
-				resized_height = 800
+				resized_height = 400
 				resized_width = int(round((MAX_SIZE/float(image.size[1]))*image.size[0]))
 
 			image = image.resize((resized_width, resized_height), Image.ANTIALIAS)
